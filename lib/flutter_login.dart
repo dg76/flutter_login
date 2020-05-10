@@ -1,28 +1,31 @@
 library flutter_login;
 
 import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter/foundation.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:provider/provider.dart';
-import 'src/providers/login_theme.dart';
-import 'src/widgets/null_widget.dart';
-import 'theme.dart';
-import 'src/dart_helper.dart';
+
 import 'src/color_helper.dart';
+import 'src/constants.dart';
+import 'src/dart_helper.dart';
 import 'src/providers/auth.dart';
 import 'src/providers/login_messages.dart';
+import 'src/providers/login_theme.dart';
 import 'src/regex.dart';
 import 'src/widgets/auth_card.dart';
 import 'src/widgets/fade_in.dart';
-import 'src/widgets/hero_text.dart';
 import 'src/widgets/gradient_box.dart';
+import 'src/widgets/hero_text.dart';
+import 'src/widgets/null_widget.dart';
+import 'theme.dart';
+
 export 'src/models/login_data.dart';
 export 'src/providers/login_messages.dart';
 export 'src/providers/login_theme.dart';
-import 'src/constants.dart';
 
 class _AnimationTimeDilationDropdown extends StatelessWidget {
   _AnimationTimeDilationDropdown({
@@ -218,7 +221,12 @@ class FlutterLogin extends StatefulWidget {
     this.logoTag,
     this.titleTag,
     this.showDebugButtons = false,
+    this.email,
+    this.password
   }) : super(key: key);
+
+  final String email;
+  final String password;
 
   /// Called when the user hit the submit button when in sign up mode
   final AuthCallback onSignup;
@@ -551,6 +559,8 @@ class _FlutterLoginState extends State<FlutterLogin>
             onLogin: widget.onLogin,
             onSignup: widget.onSignup,
             onRecoverPassword: widget.onRecoverPassword,
+            email: widget.email ?? "",
+            password: widget.password ?? ""
           ),
         ),
       ],
