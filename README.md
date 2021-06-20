@@ -4,7 +4,7 @@
 [![Workflow](https://github.com/NearHuscarl/flutter_login/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/NearHuscarl/flutter_login/actions)
 
 `FlutterLogin` is a ready-made login/signup widget with many animation effects to
-demonstrate the capabilities of Flutter
+demonstrate the capabilities of Flutter. This variant adds the possibility to set the contents of the "email" and "password" fields.
 
 <p align="center">
   <a href='https://i.imgur.com/z3FJSe7.mp4'>
