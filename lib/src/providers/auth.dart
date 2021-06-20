@@ -1,30 +1,36 @@
 import 'package:flutter/material.dart';
 
+import '../../flutter_login.dart';
 import '../models/login_data.dart';
 
 enum AuthMode { Signup, Login }
 
 /// The result is an error message, callback successes if message is null
-typedef AuthCallback = Future<String> Function(LoginData);
+typedef AuthCallback = Future<String?>? Function(LoginData);
 
 /// The result is an error message, callback successes if message is null
-typedef RecoverCallback = Future<String> Function(String);
+typedef ProviderAuthCallback = Future<String?>? Function();
+
+/// The result is an error message, callback successes if message is null
+typedef RecoverCallback = Future<String?>? Function(String);
 
 class Auth with ChangeNotifier {
   Auth({
+    this.loginProviders = const [],
     this.onLogin,
     this.onSignup,
     this.onRecoverPassword,
     String email = '',
     String password = '',
     String confirmPassword = '',
-  })  : this._email = email,
-        this._password = password,
-        this._confirmPassword = confirmPassword;
+  })  : _email = email,
+        _password = password,
+        _confirmPassword = confirmPassword;
 
-  final AuthCallback onLogin;
-  final AuthCallback onSignup;
-  final RecoverCallback onRecoverPassword;
+  final AuthCallback? onLogin;
+  final AuthCallback? onSignup;
+  final RecoverCallback? onRecoverPassword;
+  final List<LoginProvider> loginProviders;
 
   AuthMode _mode = AuthMode.Login;
 
@@ -52,21 +58,21 @@ class Auth with ChangeNotifier {
   }
 
   String _email = '';
-  get email => _email;
+  String get email => _email;
   set email(String email) {
     _email = email;
     notifyListeners();
   }
 
   String _password = '';
-  get password => _password;
+  String get password => _password;
   set password(String password) {
     _password = password;
     notifyListeners();
   }
 
   String _confirmPassword = '';
-  get confirmPassword => _confirmPassword;
+  String get confirmPassword => _confirmPassword;
   set confirmPassword(String confirmPassword) {
     _confirmPassword = confirmPassword;
     notifyListeners();

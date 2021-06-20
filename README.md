@@ -1,4 +1,7 @@
 # Flutter Login
+[![pub package](https://img.shields.io/pub/v/flutter_login?include_prereleases)](https://pub.dartlang.org/packages/flutter_login)
+[![Join the chat](https://img.shields.io/discord/817442412313051220)](https://discord.gg/kP7jXHeNtS)
+[![Workflow](https://github.com/NearHuscarl/flutter_login/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/NearHuscarl/flutter_login/actions)
 
 `FlutterLogin` is a ready-made login/signup widget with many animation effects to
 demonstrate the capabilities of Flutter
@@ -15,7 +18,7 @@ Follow the install instructions [here](https://pub.dev/packages/flutter_login#-i
 
 ## Reference
 
-Property |   Type     | Desciption
+Property |   Type     | Description
 -------- |------------| ---------------
 onSignup |   `AuthCallback`     | <sub>Called when the user hit the submit button when in sign up mode</sub>
 onLogin |   `AuthCallback`     | <sub>Called when the user hit the submit button when in login mode</sub>
@@ -24,12 +27,17 @@ title |   `String`     | <sub>The large text above the login [Card], usually the
 logo |   `String`     | <sub>The path to the asset image that will be passed to the `Image.asset()`</sub>
 messages |   [`LoginMessages`](#LoginMessages)     | <sub>Describes all of the labels, text hints, button texts and other auth descriptions</sub>
 theme |   [`LoginTheme`](#LoginTheme)     | <sub>FlutterLogin's theme. If not specified, it will use the default theme as shown in the demo gifs and use the colorsheme in the closest `Theme` widget</sub>
-emailValidator |   <sub>`FormFieldValidator<String>`</sub>     | <sub>Email validating logic, Returns an error string to display if the input is invalid, or null otherwise</sub>
-passwordValidator | <sub>`FormFieldValidator<String>`</sub>     | <sub>Same as `emailValidator` but for password</sub>
+userType |   [`LoginUserType`](#LoginUserType)     | <sub>FlutterLogin's user type. If not specified, it will use the default user type as email</sub>
+userValidator |   <sub>`FormFieldValidator<String>`</sub>     | <sub>User field validating logic, add your custom validation here. The default is email validation logic. Expects to return an error message [String] to be display if validation fails or [null] if validation succeeds</sub>
+passwordValidator | <sub>`FormFieldValidator<String>`</sub>     | <sub>Same as `userValidator` but for password</sub>
 <sub>onSubmitAnimationCompleted</sub> |   `Function`     | <sub>Called after the submit animation's completed. Put your route transition logic here</sub>
 logoTag |   `String`     | <sub>`Hero` tag for logo image. If not specified, it will simply fade out when changing route</sub>
 titleTag |   `String`     | <sub>`Hero` tag for title text. Need to specify `LoginTheme.beforeHeroFontSize` and `LoginTheme.afterHeroFontSize` if you want different font size before and after hero animation</sub>
-showDebugButtons |   `bool`     | <sub>Display the debug buttons to quickly forward/reverse login animations. In release mode, this will be overrided to `false` regardless of the value passed in</sub>
+showDebugButtons |   `bool`     | <sub>Display the debug buttons to quickly forward/reverse login animations. In release mode, this will be overridden to `false` regardless of the value passed in</sub>
+hideForgotPasswordButton |   `bool`     | <sub>Hides the Forgot Password button if set to true</sub>
+hideSignUpButton |   `bool`     | <sub>Hides the SignUp button if set to true</sub>
+hideProvidersTitle |   `bool`     | <sub>Hides the title above login providers if set to true. In case the providers List is empty this is uneffective, as the title is hidden anyways. The default is `false`</sub>
+
 
 
 
@@ -45,9 +53,9 @@ import 'package:flutter_login/theme.dart';
 
 ### LoginMessages
 
-Property |   Type     | Desciption
+Property |   Type     | Description
 -------- |------------| ---------------
-usernameHint | `String` | Hint text of the user name [TextField]
+userHint | `String` | Hint text of the user field [TextField] (Note: user field can be name, email or phone. For more info check: [`LoginUserType`](#LoginUserType))
 passwordHint | `String` | Hint text of the password [TextField]
 confirmPasswordHint | `String` | Hint text of the confirm password [TextField]
 forgotPasswordButton | `String` | Forgot password button's label
@@ -59,10 +67,13 @@ recoverPasswordDescription | `String` | Description in password recovery form
 goBackButton | `String` | Go back button's label. Go back button is used to go back to to login/signup form from the recover password form
 confirmPasswordError | `String` | The error message to show when the confirm password not match with the original password
 recoverPasswordSuccess | `String` | The success message to show after submitting recover password
+flushbarTitleError | `String` | The Flushbar title on errors
+flushbarTitleSuccess | `String` | The Flushbar title on successes
+providersTitle | `String` | A string shown above the login Providers, defaults to `or login with`
 
 ### LoginTheme
 
-Property |   Type     | Desciption
+Property |   Type     | Description
 -------- |------------| ---------------
 primaryColor | `Color` | The background color of major parts of the widget like the login screen and buttons
 accentColor | `Color` | The secondary color, used for title text color, loading icon, etc. Should be contrast with the [primaryColor]
@@ -78,6 +89,16 @@ beforeHeroFontSize | `double` | Defines the font size of the title in the login 
 afterHeroFontSize | `double` | Defines the font size of the title in the screen after the login screen (after the hero transition)
 pageColorLight | `Color` | The optional light background color of login screen; if provided, used for light gradient instead of primaryColor
 pageColorDark | `Color` | The optional dark background color of login screen; if provided, used for dark gradient instead of primaryColor
+footerBottomPadding | `double` | The footer bottom Padding; defaults to 0 if not provided.
+
+### LoginUserType
+Enum     |   Description |
+-------- |---------------|
+EMAIL | The User Field will be set to be email
+NAME  | The User Field will be set to be username
+PHONE  | The User Field will be set to be phone
+
+[LoginUserType] will change how the user field [TextField] behaves. Autofills and Keyboard Type will be adjusted automatically for the type of user that you pass.
 
 
 ## Examples
@@ -104,7 +125,7 @@ class LoginScreen extends StatelessWidget {
     print('Name: ${data.name}, Password: ${data.password}');
     return Future.delayed(loginTime).then((_) {
       if (!users.containsKey(data.name)) {
-        return 'Username not exists';
+        return 'User not exists';
       }
       if (users[data.name] != data.password) {
         return 'Password does not match';
@@ -117,7 +138,7 @@ class LoginScreen extends StatelessWidget {
     print('Name: $name');
     return Future.delayed(loginTime).then((_) {
       if (!users.containsKey(name)) {
-        return 'Username not exists';
+        return 'User not exists';
       }
       return null;
     });
@@ -143,6 +164,107 @@ class LoginScreen extends StatelessWidget {
 
 <img src="https://github.com/NearHuscarl/flutter_login/raw/master/demo/basic.png" width="300">
 
+
+
+### Basic example with sign in providers
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_login/flutter_login.dart';
+import 'dashboard_screen.dart';
+
+const users = const {
+  'dribbble@gmail.com': '12345',
+  'hunter@gmail.com': 'hunter',
+};
+
+class LoginScreen extends StatelessWidget {
+  Duration get loginTime => Duration(milliseconds: 2250);
+
+  Future<String> _authUser(LoginData data) {
+    print('Name: ${data.name}, Password: ${data.password}');
+    return Future.delayed(loginTime).then((_) {
+      if (!users.containsKey(data.name)) {
+        return 'User not exists';
+      }
+      if (users[data.name] != data.password) {
+        return 'Password does not match';
+      }
+      return null;
+    });
+  }
+
+  Future<String> _recoverPassword(String name) {
+    print('Name: $name');
+    return Future.delayed(loginTime).then((_) {
+      if (!users.containsKey(name)) {
+        return 'User not exists';
+      }
+      return null;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FlutterLogin(
+      title: 'ECORP',
+      logo: 'assets/images/ecorp-lightblue.png',
+      onLogin: _authUser,
+      onSignup: _authUser,
+      
+        loginProviders: <LoginProvider>[
+          LoginProvider(
+            icon: FontAwesomeIcons.google,
+            callback: () async {
+              print('start google sign in');
+              await Future.delayed(loginTime);
+              print('stop google sign in');              
+              return null;
+            },
+          ),
+          LoginProvider(
+            icon: FontAwesomeIcons.facebookF,
+            callback: () async {            
+              print('start facebook sign in');
+              await Future.delayed(loginTime);
+              print('stop facebook sign in');              
+              return null;
+            },
+          ),
+          LoginProvider(
+            icon: FontAwesomeIcons.linkedinIn,
+            callback: () async {         
+              print('start linkdin sign in');
+              await Future.delayed(loginTime);         
+              print('stop linkdin sign in');              
+              return null;
+            },
+          ),
+          LoginProvider(
+            icon: FontAwesomeIcons.githubAlt,
+            callback: () async {
+              print('start github sign in');
+              await Future.delayed(loginTime);
+              print('stop github sign in');              
+              return null;
+            },
+          ),
+        ],
+      onSubmitAnimationCompleted: () {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => DashboardScreen(),
+        ));
+      },
+      onRecoverPassword: _recoverPassword,
+    );
+  }
+}
+```
+
+<img src="https://github.com/xnio94/flutter_login/raw/master/demo/sign_in_providers.png" width="300">
+
+
+
 ### Theming via `ThemeData`
 
 Login theme can be customized indectly by using `ThemeData` like this
@@ -164,7 +286,7 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.orange,
         cursorColor: Colors.orange,
         textTheme: TextTheme(
-          display2: TextStyle(
+          headline3: TextStyle(
             fontFamily: 'OpenSans',
             fontSize: 45.0,
             color: Colors.orange,
@@ -172,8 +294,8 @@ class MyApp extends StatelessWidget {
           button: TextStyle(
             fontFamily: 'OpenSans',
           ),
-          subhead: TextStyle(fontFamily: 'NotoSans'),
-          body1: TextStyle(fontFamily: 'NotoSans'),
+          subtitle1: TextStyle(fontFamily: 'NotoSans'),
+          bodyText2: TextStyle(fontFamily: 'NotoSans'),
         ),
       ),
       home: LoginScreen(),
@@ -229,7 +351,7 @@ class LoginScreen extends StatelessWidget {
       },
       onRecoverPassword: (_) => Future(null),
       messages: LoginMessages(
-        usernameHint: 'Username',
+        userHint: 'User',
         passwordHint: 'Pass',
         confirmPasswordHint: 'Confirm',
         loginButton: 'LOG IN',
